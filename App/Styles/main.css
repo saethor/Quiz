@@ -1,11 +1,11 @@
-
 .quiz-container {
-    max-width: 500px;
-    margin: 20px auto;
-}
+  max-width: 500px;
+  margin: 20px auto; }
 
 .choice {
-    padding: 10px;
-    float: left;
-    cursor: pointer;
-}
+  padding: 10px;
+  float: left;
+  cursor: pointer; }
+
+body {
+  padding: 100px; }
