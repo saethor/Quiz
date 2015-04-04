@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Quiz It</title>
+    <link rel="stylesheet" href="Styles/main.css">
+</head>
+<body>
+    
+    <div class="quiz-container" id="quiz">
+        
+    </div>
+
+    <script id="question-template" type="x-handlebars-template">
+        <h3>{{question}}</h3>
+
+        <div class="choices-container">
+        {{#each choices}}
+            <div class="choice">{{this}}</div>
+        {{/each}}
+        </div>
+    </script>
+
+    <script id="wrong-answear-template" type="x-handlebars-template">
+        <h1>Sorry (x) is not a right answear</h1>
+        <button id="next-question">Next Question</button>
+    </script>
+
+    <script id="right-answear-template" type="x-handlebars-template">
+        <h1>(x) is the right answear, 1 point for you!</h1>
+        <button id="next-question">Next Question</button>
+    </script>
+
+    <script src="bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="bower_components/bootstrap-sass/assets/javascripts/bootstrap.min.js"></script>
+    <script src="bower_components/handlebars/handlebars.min.js"></script>
+    <script src="Scripts/Quiz.js"></script>
+    <script src="Scripts/main.js"></script>
+
+    
+</body>
+</html>
