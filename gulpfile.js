@@ -7,36 +7,16 @@ var browserSync = require('browser-sync');
 var reload = browserSync.reload;
  
 gulp.task('styles', function () {
-    return gulp.src('App/styles/main.scss')
+    return gulp.src('App/Styles/main.scss')
         .pipe(sass({errLogToConsole: true}))
         .pipe(autoprefixer('last 1 version'))
-        .pipe(gulp.dest('App/styles'))
-        .pipe(reload({stream:true}));
+        .pipe(gulp.dest('App/Styles'))
 });
 
-gulp.task('serve', ['styles'], function () {
-    browserSync.init(null, {
-        server: {
-            baseDir: 'App',
-            directory: true
-        },
-        debugInfo: false,
-        open: false,
-        hostnameSuffix: ".xip.io"
-    }, function (err, bs) {
-        require('opn')(bs.options.url);
-        console.log('Started connect web server on ' + bs.options.url);
-    });
-});
-
-gulp.task('watch', ['serve'], function () {
+gulp.task('watch', function () {
  
     // watch for changes
-    gulp.watch(['App/*.html'], reload);
- 
-    gulp.watch('App/styles/**/*.scss', ['styles']);
-    gulp.watch('App/scripts/**/*.js', ['scripts']);
-    gulp.watch('App/images/**/*', ['images']);
+    gulp.watch('App/Styles/**/*.scss', ['styles']);
 });
 
 
