@@ -26,7 +26,7 @@ Quiz = {
         $('.quiz-container').html(template(context));
 
         // Adds the function for user to answear the question
-        this.bindUIActions(context.choices, context.correctAnswer);
+        this.bindUIActions(context);
     },
 
     update: function() {
@@ -43,22 +43,22 @@ Quiz = {
         $('.quiz-container').html(template(context));
 
         // Adds the function for user to answear the question
-        this.bindUIActions(context.choices, context.correctAnswer);
+        this.bindUIActions(context);
     },
 
-    bindUIActions: function(choices, correctAnswer) { 
+    bindUIActions: function(context) { 
         $('.choice').click(function(event) {
-            if ($(this).text() == choices[correctAnswer]){
-                Quiz.rightAnswear();
+            if ($(this).text() == context.choices[context.correctAnswer]){
+                Quiz.rightAnswear(context.question, $(this).text());
             }
             else {
-                Quiz.wrongAnswear();
+                Quiz.wrongAnswear(context.question, $(this).text());
             }
 
         });
     },
 
-    rightAnswear: function() {
+    rightAnswear: function(preQuestion, choicenAnswear) {
         // Gets the quiz view
         var source = s.rightAnswearView;
 
@@ -66,7 +66,7 @@ Quiz = {
         var template = Handlebars.compile(source);
 
         // Gets random question and displays it to the user
-        var context = this.questions[Math.floor(Math.random() * this.questions.length)];
+        var context = {question: preQuestion, choicen: choicenAnswear};
 
         // Appends the view to the index
         $('.quiz-container').html(template(context));
@@ -80,7 +80,7 @@ Quiz = {
         });
     },
 
-    wrongAnswear: function() {
+    wrongAnswear: function(preQuestion, choicenAnswear) {
         // Gets the quiz view
         var source = s.wrongAnswearView;
 
@@ -88,7 +88,7 @@ Quiz = {
         var template = Handlebars.compile(source);
 
         // Gets random question and displays it to the user
-        var context = this.questions[Math.floor(Math.random() * this.questions.length)];
+        var context = {question: preQuestion, choicen: choicenAnswear};
 
         // Appends the view to the index
         $('.quiz-container').html(template(context));
