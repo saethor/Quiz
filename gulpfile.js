@@ -9,7 +9,7 @@ var reload = browserSync.reload;
 gulp.task('styles', function () {
     return gulp.src('App/Styles/main.scss')
         .pipe(sass({errLogToConsole: true}))
-        .pipe(autoprefixer('last 1 version'))
+        .pipe(autoprefixer('last 2 version'))
         .pipe(gulp.dest('App/Styles'))
 });
 
