@@ -10,11 +10,14 @@ $success: #88d8b0;
     box-sizing: border-box;
 }
 
+body {
+    font-size: 16px;
+    font-family: 'Roboto', sans-serif;
+}
+
 .quiz-container {
     max-width: 600px;
-    margin: 100px auto;
-
-    
+    margin: 20px auto;
 }
 
 .question {
@@ -101,11 +104,20 @@ $success: #88d8b0;
     }
 }
 
+.btn-container:before {
+    clear: both;
+}
+
+.btn-container:after {
+    clear: both;
+}
+
 .btn {
     padding: 10px 20px;
     border: none;
     margin: 20px 0;
     font-size: 1em;
+    text-align: center;
 
     cursor: pointer;
 }
@@ -118,6 +130,37 @@ $success: #88d8b0;
 .btn-prev {
     @extend %btn-navigation;
     float: left;
+}
+
+.btn-retake {
+    color: $secondary;
+    outline: none;
+
+    font-size: 1.3em;
+
+    width: 100%;
+    padding: 30px;
+
+    background-color: darken($primary, 20%);
+
+    &:hover {
+        background-color: darken($primary, 30%);
+    }
+}
+
+////////////
+// Alerts //
+////////////
+.quiz-alerts {
+    @extend .quiz-container;
+    min-height: 70px;
+
+    .error {
+        color: $secondary;
+        background-color: $danger;
+        padding: 20px;
+        font-size: 1.2em;
+    }
 }
 
 

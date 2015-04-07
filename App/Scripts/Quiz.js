@@ -1,3 +1,4 @@
+
 var s, 
 Quiz = {
 
@@ -8,8 +9,8 @@ Quiz = {
         questionView: $("#question-template").html(),
         finishedView: $("#quiz-finished").html(),
         rightAnswerView: $("#right-answer-template").html(),
-        wrongAnswerView: $("#wrong-answer-template").html()
-
+        wrongAnswerView: $("#wrong-answer-template").html(),
+        errorView: $("#quiz-error-template").html()
     },
 
     init: function() {
@@ -64,16 +65,19 @@ Quiz = {
         // if so it should check if hi is right and increment his score, else
         // it should display a error 
         $('#next-question').click(function(e) {
-            var answer = $('input[name=' + context.id + ']:checked').val()
+            e.preventDefault();
+
+            var answer = $('input[name=' + context.id + ']:checked').val();
             if (answer) {
                 if (answer == context.choices[context.correctAnswer]) {
                     s.points++;
                 } 
                 s.answeredQuestions.push(context.id);
                 Quiz.update();
+                Quiz.displayMessage('clear');
             }
             else {
-                alert('Please chooce a answer!');
+                Quiz.displayMessage('Please chooce a answer!');
             }
         });
     },
@@ -89,7 +93,35 @@ Quiz = {
         var context = this.settings;
 
         // Appends the view to the index
-        $('.quiz-container').html(template(context));
+        quizContainer.html(template(context));
+
+        $('#retake-quiz').click(function(e) {
+            s.answeredQuestions = [];
+            s.points = 0;
+
+            Quiz.update();
+        });
+    },
+
+    displayMessage: function(errorMessage) {
+        var source = s.errorView;
+
+        // Compiles the view
+        var template = Handlebars.compile(source);
+
+        // Gets random question and displays it to the user
+        switch(errorMessage) {
+            case 'clear':
+                $('.quiz-alerts').html('');
+                break;
+
+            default:
+                var context = { error: errorMessage};
+                // Appends the view to the index
+                $('.quiz-alerts').html(template(context));
+                break;
+        }
+        
     },
 
     questions: [
@@ -164,4 +196,4 @@ function inArray(needle, heystack) {
 
 Handlebars.registerHelper('finalPoints', function() {
     return s.points + '/' + Quiz.questions.length;
-})
+});
