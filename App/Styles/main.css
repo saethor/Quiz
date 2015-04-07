@@ -5,15 +5,20 @@
   max-width: 600px;
   margin: 100px auto; }
 
-.question, .results {
+.question, .quiz-results {
   border-bottom: 1px solid #ffeead;
   margin: 20px 0; }
-  .question h1, .results h1 {
+  .question h1, .quiz-results h1 {
     color: #96ceb4;
     font-size: 3em;
     text-align: center; }
 
-.results h2 {
+.quiz-results h2 {
+  color: #ff6f69;
+  font-size: 2em;
+  text-align: center; }
+
+.quiz-leaderboard {
   color: #96ceb4;
   font-size: 2em;
   text-align: center; }

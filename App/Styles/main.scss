@@ -28,14 +28,20 @@ $success: #88d8b0;
     }
 }
 
-.results {
+.quiz-results {
     @extend .question;
 
     h2 {
-        color: $primary;
+        color: $danger;
         font-size: 2em;
         text-align: center;
     }
+}
+
+.quiz-leaderboard {
+    color: $primary;
+    font-size: 2em;
+    text-align: center;
 }
 
 .choices {
