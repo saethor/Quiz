@@ -79,6 +79,12 @@ Quiz = {
             else {
                 Quiz.displayMessage('Please chooce a answer!');
             }
+
+
+        });
+
+        $('#close').click(function(e) {
+            Quiz.displayMessage('clear');
         });
     },
 
@@ -93,7 +99,7 @@ Quiz = {
         var context = this.settings;
 
         // Appends the view to the index
-        quizContainer.html(template(context));
+        s.quizContainer.html(template(context));
 
         $('#retake-quiz').click(function(e) {
             s.answeredQuestions = [];
@@ -101,6 +107,7 @@ Quiz = {
 
             Quiz.update();
         });
+        
     },
 
     displayMessage: function(errorMessage) {
@@ -121,6 +128,7 @@ Quiz = {
                 $('.quiz-alerts').html(template(context));
                 break;
         }
+
         
     },
 

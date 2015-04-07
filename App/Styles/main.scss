@@ -160,6 +160,11 @@ body {
         background-color: $danger;
         padding: 20px;
         font-size: 1.2em;
+
+        #close {
+            float: right;
+            cursor: pointer;
+        }
     }
 }
 

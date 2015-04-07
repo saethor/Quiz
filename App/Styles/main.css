@@ -117,6 +117,9 @@ body {
     background-color: #ff6f69;
     padding: 20px;
     font-size: 1.2em; }
+    .quiz-alerts .error #close {
+      float: right;
+      cursor: pointer; }
 
 footer {
   text-align: center;
