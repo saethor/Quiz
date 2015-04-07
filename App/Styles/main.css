@@ -64,22 +64,34 @@
     color: #96ceb4;
     cursor: pointer; }
     .choice + label:hover {
-      background-color: #ffe37a;
-      font-size: scale(10%); }
+      background-color: #ffe37a; }
   .choice:checked + label {
     background-image: none;
     background-color: #ffcc5c; }
 
+.btn-next, .btn-prev {
+  color: #ffeead;
+  outline: none;
+  background-color: #96ceb4; }
+  .btn-next:hover, .btn-prev:hover {
+    background-color: #51ad82; }
+
 .btn {
   padding: 10px 20px;
-  float: right;
   border: none;
   margin: 20px 0;
   font-size: 1em;
   cursor: pointer; }
 
 .btn-next {
-  color: #ffeead;
-  background-color: #96ceb4; }
-  .btn-next:hover {
-    background-color: #51ad82; }
+  float: right; }
+
+.btn-prev {
+  float: left; }
+
+footer {
+  text-align: center;
+  font-size: 1em; }
+  footer a {
+    color: #88d8b0;
+    text-decoration: none; }

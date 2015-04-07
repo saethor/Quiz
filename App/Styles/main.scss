@@ -76,7 +76,6 @@ $success: #88d8b0;
 
         &:hover {
             background-color: darken($secondary, 10%);
-            font-size: scale(10%);
         }
     }
 
@@ -86,9 +85,24 @@ $success: #88d8b0;
     }
 }
 
+
+/////////////
+// Buttons //
+/////////////
+%btn-navigation {
+    color: $secondary;
+    outline: none;
+    background: {
+        color: $primary;
+    }
+
+    &:hover {
+        background-color: darken($primary, 20%);
+    }
+}
+
 .btn {
     padding: 10px 20px;
-    float: right;
     border: none;
     margin: 20px 0;
     font-size: 1em;
@@ -97,13 +111,22 @@ $success: #88d8b0;
 }
 
 .btn-next {
-    color: $secondary;
-    background: {
-        color: $primary;
-    }
+    @extend %btn-navigation;
+    float: right;
+}
 
-    &:hover {
-        background-color: darken($primary, 20%);
-    }
+.btn-prev {
+    @extend %btn-navigation;
+    float: left;
+}
 
+
+footer {
+    text-align: center;
+    font-size: 1em;
+
+    a {
+        color: $success;
+        text-decoration: none;
+    }
 }
