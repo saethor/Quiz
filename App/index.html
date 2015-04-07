@@ -27,24 +27,17 @@
     </script>
 
     <script id="quiz-finished" type="x-handlebars-template">
+
         <div class="quiz-results">
             <h1>Congratulation you finished the quiz!</h1>
             <h2>You scored {{finalPoints s}}</h2>
         </div>
+
         <div class="quiz-leaderboard">
             <h3>leaderboard here</h3>
         </div
-    </script>
 
-    <script id="wrong-answear-template" type="x-handlebars-template">
-        <h1>Sorry (x) is not a right answear</h1>
-        <button id="next-question">Next Question</button>
-    </script>
-
-    <script id="right-answear-template" type="x-handlebars-template">
-        <h1>{{question}}</h1>
-        <h2>{{choicen}} is the right answear, 1 point for you!</h2>
-        <button id="next-question">Next Question</button>
+        <button class="btn btn-next" id="next-question">Next Question</button>
     </script>
 
     <script src="bower_components/jquery/dist/jquery.min.js"></script>

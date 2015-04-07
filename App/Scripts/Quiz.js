@@ -78,46 +78,6 @@ Quiz = {
         });
     },
 
-    rightAnswer: function(preQuestion, choicenAnswer) {
-        // Gets the quiz view
-        var source = s.rightAnswerView;
-
-        // Compiles the view
-        var template = Handlebars.compile(source);
-
-        // Gets random question and displays it to the user
-        var context = {question: preQuestion, choicen: choicenAnswer};
-
-        // Appends the view to the index
-        $('.quiz-container').html(template(context));
-
-        s.points++;
-
-        console.log(s.points);
-
-        $('#next-question').click(function(e) {
-            Quiz.update();
-        });
-    },
-
-    wrongAnswer: function(preQuestion, choicenAnswer) {
-        // Gets the quiz view
-        var source = s.wrongAnswerView;
-
-        // Compiles the view
-        var template = Handlebars.compile(source);
-
-        // Gets random question and displays it to the user
-        var context = {question: preQuestion, choicen: choicenAnswer};
-
-        // Appends the view to the index
-        $('.quiz-container').html(template(context));
-
-        $('#next-question').click(function(e) {
-            Quiz.update();
-        });
-    },
-
     finished: function() {
         // Gets the quiz view
         var source = s.finishedView;
