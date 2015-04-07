@@ -12,12 +12,24 @@
     </div>
 
     <script id="question-template" type="x-handlebars-template">
-        <h3>{{question}}</h3>
+        <div class="question">
+            <h1>{{question}}</h1>
+        </div>
 
-        <div class="choices-container">
+        <div class="choices">
         {{#each choices}}
-            <div class="choice">{{this}}</div>
+            <input class="choice" type="radio" name="{{../id}}" id="{{this}}"value="{{this}}"><label for="{{this}}">
+                {{this}}
+            </label>
         {{/each}}
+        </div>
+        <button class="btn btn-next" id="next-question">Next Question</button>
+    </script>
+
+    <script id="quiz-finished" type="x-handlebars-template">
+        <div class="results">
+            <h1>Congratulation you finished the quiz!</h1>
+            <h2>You scored {{finalPoints s}}</h2>
         </div>
     </script>
 
