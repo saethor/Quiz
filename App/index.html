@@ -17,21 +17,26 @@
     </div>    
 
     <script id="question-template" type="x-handlebars-template">
+
         <div class="question">
             <h1>{{question}}</h1>
         </div>
 
         <div class="choices">
-        {{#each choices}}
-            <input class="choice" type="radio" name="{{../id}}" id="{{this}}"value="{{this}}"><label for="{{this}}">
-                {{this}}
-            </label>
-        {{/each}}
+            {{#each choices}}
+
+                <input class="choice" type="radio" name="{{../id}}" id="{{@index}}"value="{{@index}}">
+
+                <label for="{{@index}}">{{this}}</label>
+
+            {{/each}}
         </div>
+
         <div class="button-container">
             <button class="btn btn-next" id="next-question">Next Question</button>
             <button class="btn btn-prev" id="prev-question">Previous Question</button>
         </div>
+
     </script>
 
     <script id="quiz-finished" type="x-handlebars-template">

@@ -42,22 +42,29 @@ Quiz = {
 
             // Gets random question and displays it to the user
             var context;
-            do 
-            {
+            do {
                 context = this.questions[Math.floor(Math.random() * this.questions.length)];
-            } while (inArray(context.id, s.answeredQuestions));
+            } while (Quiz.isAnswered(context.id, s.answeredQuestions))
 
             // Appends the view to the index
             s.quizContainer.html(template(context));
 
             // Adds the function for user to answer the question
             this.bindUIActions(context);
-        } 
+        }
         else {
             // Returns finish view with information
            Quiz.finished();
         }
 
+    },
+
+    isAnswered: function(needle, heystack) {
+        var length = heystack.length;
+        for (var i = 0; i < length; i++) {
+            if (heystack[i][0] == needle) return true;
+        }
+        return false;
     },
 
     bindUIActions: function(context) { 
@@ -67,20 +74,19 @@ Quiz = {
         $('#next-question').click(function(e) {
             e.preventDefault();
 
-            var answer = $('input[name=' + context.id + ']:checked').val();
-            if (answer) {
-                if (answer == context.choices[context.correctAnswer]) {
+            var answer = Number($('input[name=' + context.id + ']:checked').val());
+
+            if (isNaN(answer) === false) {
+                if (answer === context.correctAnswer) {
                     s.points++;
                 } 
-                s.answeredQuestions.push(context.id);
+                s.answeredQuestions.push([context.id, answer]);
                 Quiz.update();
                 Quiz.displayMessage('clear');
             }
             else {
                 Quiz.displayMessage('Please chooce a answer!');
             }
-
-
         });
 
         $('#close').click(function(e) {
@@ -111,10 +117,7 @@ Quiz = {
     },
 
     displayMessage: function(errorMessage) {
-        var source = s.errorView;
-
-        // Compiles the view
-        var template = Handlebars.compile(source);
+        
 
         // Gets random question and displays it to the user
         switch(errorMessage) {
@@ -123,14 +126,42 @@ Quiz = {
                 break;
 
             default:
+                var source = s.errorView;
+                // Compiles the view
+                var template = Handlebars.compile(source);
                 var context = { error: errorMessage};
                 // Appends the view to the index
                 $('.quiz-alerts').html(template(context));
                 break;
-        }
-
-        
+        }  
     },
+
+    // Handlebars The Custom Function for rendering on the go
+    // http://javascriptissexy.com/handlebars-js-tutorial-learn-everything-about-handlebars-js-javascript-templating/#
+    /* ​render: function(tmpl_name, tmpl_data) {
+        if ( !render.tmpl_cache ) { 
+            render.tmpl_cache = {};
+        }
+    ​
+        if ( ! render.tmpl_cache[tmpl_name] ) {
+            var tmpl_dir = '/static/templates';
+            var tmpl_url = tmpl_dir + '/' + tmpl_name + '.html';
+    ​
+            var tmpl_string;
+            $.ajax({
+                url: tmpl_url,
+                method: 'GET',
+                async: false,
+                success: function(data) {
+                    tmpl_string = data;
+                }
+            });
+    ​
+            render.tmpl_cache[tmpl_name] = _.template(tmpl_string);
+        }
+    ​
+        return render.tmpl_cache[tmpl_name](tmpl_data); 
+    },*/
 
     questions: [
         {
@@ -163,34 +194,9 @@ Quiz = {
             choices: ["No one know", "The Bible", 42],
             correctAnswer: 2
         }
-    ]
+]
 
-    // Handlebars The Custom Function for rendering on the go
-    // http://javascriptissexy.com/handlebars-js-tutorial-learn-everything-about-handlebars-js-javascript-templating/#
-    // ​render: function (tmpl_name, tmpl_data) {
-    //     if ( !render.tmpl_cache ) { 
-    //         render.tmpl_cache = {};
-    //     }
-    // ​
-    //     if ( ! render.tmpl_cache[tmpl_name] ) {
-    //         var tmpl_dir = '/static/templates';
-    //         var tmpl_url = tmpl_dir + '/' + tmpl_name + '.html';
-    // ​
-    //         var tmpl_string;
-    //         $.ajax({
-    //             url: tmpl_url,
-    //             method: 'GET',
-    //             async: false,
-    //             success: function(data) {
-    //                 tmpl_string = data;
-    //             }
-    //         });
-    // ​
-    //         render.tmpl_cache[tmpl_name] = _.template(tmpl_string);
-    //     }
-    // ​
-    //     return render.tmpl_cache[tmpl_name](tmpl_data);
-    // }
+    
 };
 
 function inArray(needle, heystack) {
@@ -205,3 +211,28 @@ function inArray(needle, heystack) {
 Handlebars.registerHelper('finalPoints', function() {
     return s.points + '/' + Quiz.questions.length;
 });
+
+// And this is the definition of the custom function ​
+function render(tmpl_name, tmpl_data) {
+    if (!render.tmpl_cache) { 
+        render.tmpl_cache = {};
+    }
+
+    if (!render.tmpl_cache[tmpl_name]) {
+        var tmpl_dir = '/App/Views';
+        var tmpl_url = tmpl_dir + '/' + tmpl_name + '.html';
+        var tmpl_string;
+        $.ajax({
+            url: tmpl_url,
+            method: 'GET',
+            async: false,
+            success: function(data) {
+                tmpl_string = data;
+            }
+        });
+
+        render.tmpl_cache[tmpl_name] = Handlebars.compile(tmpl_string);
+    }
+
+    return render.tmpl_cache[tmpl_name](tmpl_data);
+}
