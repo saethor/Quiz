@@ -98,7 +98,8 @@ body {
   float: right; }
 
 .btn-prev {
-  float: left; }
+  float: left;
+  cursor: not-allowed; }
 
 .btn-retake {
   color: #ffeead;

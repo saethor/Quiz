@@ -130,6 +130,7 @@ body {
 .btn-prev {
     @extend %btn-navigation;
     float: left;
+    cursor: not-allowed;
 }
 
 .btn-retake {
