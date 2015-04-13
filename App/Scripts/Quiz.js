@@ -1,53 +1,55 @@
 
-var s, 
+var s, // access to settings
 Quiz = {
 
+    /**
+     * Setting contain variables for easy access
+     * @type {Object}
+     */
     settings: {
-        points: 0,
-        answeredQuestions: [],
-        quizContainer: $('.quiz-container'),
-        questionView: $("#question-template").html(),
-        finishedView: $("#quiz-finished").html(),
-        rightAnswerView: $("#right-answer-template").html(),
-        wrongAnswerView: $("#wrong-answer-template").html(),
-        errorView: $("#quiz-error-template").html()
+        points: 0,                                      // How many right answeres user has
+        answeredQuestions: [],                          // All the questions user has answerd and what he answered
+        quizContainer: $('.quiz-container'),            // Selector for the quiz container
+        alertContainer: $('.quiz-alerts'),              // Selector for alert container
+        questionView: $("#question-template").html(),   // QuestionView Template
+        finishedView: $("#quiz-finished").html(),       // FinishedView Template
+        errorView: $("#quiz-error-template").html()     // ErrorView Template
+
     },
 
+    /**
+     * Initializes the quiz
+     * @return {void} Returns nothing
+     */
     init: function() {
         s = this.settings;
-
-        // Gets the quiz view
-        var source = s.questionView;
-
-        // Compiles the view
-        var template = Handlebars.compile(source);
 
         // Gets random question and displays it to the user
         var context = this.questions[Math.floor(Math.random() * this.questions.length)];
 
-        // Appends the view to the index
-        $('.quiz-container').html(template(context));
+        // Loads the template
+        this.template(s.questionView, context, s.quizContainer);
 
         // Adds the function for user to answer the question
         this.bindUIActions(context);
     },
 
+    /**
+     * Updates for new question or game finished
+     * @return {void} Returns nothng
+     */
     update: function() {
         if (Quiz.questions.length !== s.answeredQuestions.length) {
-            // Gets the quiz view
-            var source = s.questionView;
-
-            // Compiles the view
-            var template = Handlebars.compile(source);
 
             // Gets random question and displays it to the user
             var context;
             do {
+                // returns random question
                 context = this.questions[Math.floor(Math.random() * this.questions.length)];
-            } while (Quiz.isAnswered(context.id, s.answeredQuestions))
+            } while (Quiz.isAnswered(context.id, s.answeredQuestions)); // Checks if question has been answered
 
-            // Appends the view to the index
-            s.quizContainer.html(template(context));
+            // Loads the template
+            this.template(s.questionView, context, s.quizContainer);
 
             // Adds the function for user to answer the question
             this.bindUIActions(context);
@@ -59,6 +61,33 @@ Quiz = {
 
     },
 
+    /**
+     * Function for template engine
+     * @param  {id}     inputSource  Where the template is located
+     * @param  {object} inputContext What should be set into template variables
+     * @param  {string} outputHtml   Where should the template be exported
+     * @return {[void]}              Returns nothing
+     */
+    template: function (inputSource, inputContext, outputHtml) {
+        // Gets the quiz view
+        var source = inputSource;
+
+        // Compiles the view
+        var template = Handlebars.compile(source);
+
+        // Gets random question and displays it to the user
+        var context = inputContext;
+
+        // Appends the view to the index
+        outputHtml.html(template(context));
+    },
+
+    /**
+     * Checks if the question has already been answered
+     * @param  {int}        needle   Question id
+     * @param  {array}      heystack Where should the function look
+     * @return {Boolean}          
+     */
     isAnswered: function(needle, heystack) {
         var length = heystack.length;
         for (var i = 0; i < length; i++) {
@@ -67,6 +96,11 @@ Quiz = {
         return false;
     },
 
+    /**
+     * UI actions for the quiz
+     * @param  {object} context 
+     * @return {void}         Returns nothing
+     */
     bindUIActions: function(context) { 
         // When user clicks next question it should check if he has answeread,
         // if so it should check if hi is right and increment his score, else
@@ -74,95 +108,85 @@ Quiz = {
         $('#next-question').click(function(e) {
             e.preventDefault();
 
+            //  Gets the checked radiobutton
             var answer = Number($('input[name=' + context.id + ']:checked').val());
 
+            //  Checks if it is a number, if not user has not answered
             if (isNaN(answer) === false) {
+                //  Checks how smart user is
                 if (answer === context.correctAnswer) {
                     s.points++;
                 } 
+                // Adds question and answered to array
                 s.answeredQuestions.push([context.id, answer]);
+                
+                // Updates the View
                 Quiz.update();
+
+                // Clears error message if there is any
                 Quiz.displayMessage('clear');
             }
             else {
+                //  User has not answere, error displayd
                 Quiz.displayMessage('Please chooce a answer!');
             }
         });
 
+        //  Event listener for close button on errors
         $('#close').click(function(e) {
+            // Clears error
             Quiz.displayMessage('clear');
         });
     },
 
+    /**
+     * Displays the finished view
+     * @return {void} nothing returns
+     */
     finished: function() {
-        // Gets the quiz view
-        var source = s.finishedView;
 
-        // Compiles the view
-        var template = Handlebars.compile(source);
+        // Loads the right template
+        this.template(s.finishedView, this.settings, s.quizContainer);
 
-        // Gets random question and displays it to the user
-        var context = this.settings;
-
-        // Appends the view to the index
-        s.quizContainer.html(template(context));
-
+        //  Event listener for retake quiz button
         $('#retake-quiz').click(function(e) {
+
+            // Initializes answeredQuestions and points to 0
             s.answeredQuestions = [];
             s.points = 0;
 
+            // Updates the quiz view
             Quiz.update();
         });
         
     },
 
+    /**
+     * Displays error message and clears them at the top of the page
+     * @param  {string} errorMessage 
+     * @return {void}              Returns nothing
+     */
     displayMessage: function(errorMessage) {
         
 
         // Gets random question and displays it to the user
         switch(errorMessage) {
+            // Clears alert View
             case 'clear':
                 $('.quiz-alerts').html('');
                 break;
 
             default:
-                var source = s.errorView;
-                // Compiles the view
-                var template = Handlebars.compile(source);
-                var context = { error: errorMessage};
-                // Appends the view to the index
-                $('.quiz-alerts').html(template(context));
+                // Loads error with errorMessage as a message
+                this.template(s.errorView, { error: errorMessage}, s.alertContainer);
                 break;
         }  
     },
 
-    // Handlebars The Custom Function for rendering on the go
-    // http://javascriptissexy.com/handlebars-js-tutorial-learn-everything-about-handlebars-js-javascript-templating/#
-    /* ​render: function(tmpl_name, tmpl_data) {
-        if ( !render.tmpl_cache ) { 
-            render.tmpl_cache = {};
-        }
-    ​
-        if ( ! render.tmpl_cache[tmpl_name] ) {
-            var tmpl_dir = '/static/templates';
-            var tmpl_url = tmpl_dir + '/' + tmpl_name + '.html';
-    ​
-            var tmpl_string;
-            $.ajax({
-                url: tmpl_url,
-                method: 'GET',
-                async: false,
-                success: function(data) {
-                    tmpl_string = data;
-                }
-            });
-    ​
-            render.tmpl_cache[tmpl_name] = _.template(tmpl_string);
-        }
-    ​
-        return render.tmpl_cache[tmpl_name](tmpl_data); 
-    },*/
-
+    /**
+     * Array of objects containing questions
+     * @type {Array}
+     */
     questions: [
         {
             id: 0,
@@ -194,45 +218,16 @@ Quiz = {
             choices: ["No one know", "The Bible", 42],
             correctAnswer: 2
         }
-]
+    ]
 
     
 };
 
-function inArray(needle, heystack) {
-    var length = heystack.length;
-    for (var i = 0; i < length; i++)
-    {
-        if (heystack[i] == needle) return true;
-    }
-    return false;
-}
-
+/**
+ * Handlebars helper, returns how many questions are answered right / how many questions
+ * @param  {string}
+ * @return {string}   Concatinated points/questions
+ */
 Handlebars.registerHelper('finalPoints', function() {
     return s.points + '/' + Quiz.questions.length;
 });
-
-// And this is the definition of the custom function ​
-function render(tmpl_name, tmpl_data) {
-    if (!render.tmpl_cache) { 
-        render.tmpl_cache = {};
-    }
-
-    if (!render.tmpl_cache[tmpl_name]) {
-        var tmpl_dir = '/App/Views';
-        var tmpl_url = tmpl_dir + '/' + tmpl_name + '.html';
-        var tmpl_string;
-        $.ajax({
-            url: tmpl_url,
-            method: 'GET',
-            async: false,
-            success: function(data) {
-                tmpl_string = data;
-            }
-        });
-
-        render.tmpl_cache[tmpl_name] = Handlebars.compile(tmpl_string);
-    }
-
-    return render.tmpl_cache[tmpl_name](tmpl_data);
-}
