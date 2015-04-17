@@ -1,4 +1,4 @@
-
+'use strict';
 var s, // access to settings
 Quiz = {
 
@@ -14,7 +14,6 @@ Quiz = {
         questionView: $("#question-template").html(),   // QuestionView Template
         finishedView: $("#quiz-finished").html(),       // FinishedView Template
         errorView: $("#quiz-error-template").html()     // ErrorView Template
-
     },
 
     /**
@@ -69,17 +68,10 @@ Quiz = {
      * @return {[void]}              Returns nothing
      */
     template: function (inputSource, inputContext, outputHtml) {
-        // Gets the quiz view
-        var source = inputSource;
-
-        // Compiles the view
-        var template = Handlebars.compile(source);
-
-        // Gets random question and displays it to the user
-        var context = inputContext;
-
-        // Appends the view to the index
-        outputHtml.html(template(context));
+        var source = inputSource; // Gets the quiz view    
+        var template = Handlebars.compile(source); // Compiles the view  
+        var context = inputContext; // Gets random question and displays it to the user
+        outputHtml.html(template(context)); // Appends the view to the index
     },
 
     /**
@@ -108,34 +100,64 @@ Quiz = {
         $('#next-question').click(function(e) {
             e.preventDefault();
 
+            // Gets the answere user choose
+            var answerButton = $('input[name=' + context.id + ']:checked')
+
             //  Gets the checked radiobutton
-            var answer = Number($('input[name=' + context.id + ']:checked').val());
+            var answer = Number(answerButton.val());
 
             //  Checks if it is a number, if not user has not answered
             if (isNaN(answer) === false) {
+
                 //  Checks how smart user is
                 if (answer === context.correctAnswer) {
                     s.points++;
-                } 
-                // Adds question and answered to array
-                s.answeredQuestions.push([context.id, answer]);
-                
-                // Updates the View
-                Quiz.update();
 
-                // Clears error message if there is any
-                Quiz.displayMessage('clear');
+                    answerButton.next('label').addClass('rightAnswere'); // Shows the user that his answere is right
+                } 
+                else {
+                    $('#'+context.correctAnswer).next().addClass('rightAnswere'); // Shows the right answere
+                    answerButton.next('label').addClass('wrongAnswere'); // Shows user that his answere is wrong
+                }
+
+                s.answeredQuestions.push([context.id, answer]); // Adds question and answered to array
+
+                $('#next-question').html('5 Next Question');
+
+                $('#next-question').click(function() {
+                    clearTimeout(timeout);
+                    Quiz.update();
+                });
+
+                var i = 5;
+                var interval = setInterval(function() {
+                    i--;
+                    if (i === 0)
+                    {
+                        clearInterval(interval);
+                        Quiz.update();
+                    }
+                    $('#next-question').html(i + ' Next Question').click(function(event) {
+                        clearInterval(interval);
+                        Quiz.update();
+                    });
+                }, 1000)
+
+                // Updates the View after 3500 ms
+                var timeout;/* = setTimeout(function() {
+                    Quiz.update();
+                }, 3000);*/
+                
+                Quiz.displayMessage('clear'); // Clears error message if there is any
             }
             else {
-                //  User has not answere, error displayd
-                Quiz.displayMessage('Please chooce a answer!');
+                Quiz.displayMessage('Please chooce a answer!'); //  User has not answere, error displayd
             }
         });
 
         //  Event listener for close button on errors
         $('#close').click(function(e) {
-            // Clears error
-            Quiz.displayMessage('clear');
+            Quiz.displayMessage('clear'); // Clears error view
         });
     },
 

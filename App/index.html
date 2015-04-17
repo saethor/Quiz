@@ -27,14 +27,13 @@
             {{#each choices}}
 
                 <input class="choice" type="radio" name="{{../id}}" id="{{@index}}"value="{{@index}}">
-
                 <label for="{{@index}}">{{this}}</label>
 
             {{/each}}
         </div>
 
         <div class="button-container">
-            <button class="btn btn-next" id="next-question">Next Question</button>
+            <button class="btn btn-next" id="next-question">Check Answere</button>
             <button class="btn btn-prev" id="prev-question">Previous Question</button>
         </div>
 
@@ -58,11 +57,15 @@
 
 
     <!-- Error Template -->
-    <script id="quiz-error-template" type="x-handlebars-templage">
+    <script id="quiz-error-template" type="x-handlebars-template">
         <div class="error">
             {{error}}
             <span id="close">&times;</span>
         </div>
+    </script>
+
+    <script id="username-template" type="x-handlebars-template">
+
     </script>
 
 

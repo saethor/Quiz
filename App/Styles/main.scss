@@ -77,14 +77,35 @@ body {
         color: $primary;
         cursor: pointer;
 
+        -webkit-transition: background-color 0.3s ease-out;
+        -moz-transition: background-color 0.3s ease-out;
+        -o-transition: background-color 0.3s ease-out;
+        transition: background-color 0.3s ease-out;
+
+        &.rightAnswere {
+            background-color: $success;
+            color: $secondary;
+        }
+
         &:hover {
             background-color: darken($secondary, 10%);
         }
     }
 
     &:checked + label {
-    background-image: none;
-    background-color: $alert;
+        background-image: none;
+        background-color: $alert;
+
+
+        &.rightAnswere {
+            background-color: $success;
+            color: $secondary;
+        }
+
+        &.wrongAnswere {
+            background-color: $danger;
+            color: $secondary;
+        }
     }
 }
 

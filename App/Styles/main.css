@@ -66,12 +66,23 @@ body {
     font-size: 1.2em;
     font-weight: 1000;
     color: #96ceb4;
-    cursor: pointer; }
+    cursor: pointer;
+    -webkit-transition: background-color 0.3s ease-out;
+    transition: background-color 0.3s ease-out; }
+    .choice + label.rightAnswere {
+      background-color: #88d8b0;
+      color: #ffeead; }
     .choice + label:hover {
       background-color: #ffe37a; }
   .choice:checked + label {
     background-image: none;
     background-color: #ffcc5c; }
+    .choice:checked + label.rightAnswere {
+      background-color: #88d8b0;
+      color: #ffeead; }
+    .choice:checked + label.wrongAnswere {
+      background-color: #ff6f69;
+      color: #ffeead; }
 
 .btn-next, .btn-prev {
   color: #ffeead;
