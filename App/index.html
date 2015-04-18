@@ -21,6 +21,9 @@
                 <button class="btn btn--start" id="start-quiz" disabled>Start</button>
             </div>
         </div>
+
+        <footer><a href="http://github.com/saethor">&copy;2015 Sæþór Hallgrímsson</a></footer>
+
     </div>    
 
     <!-- Main Question template -->
@@ -55,13 +58,19 @@
         </div>
 
         <div class="quiz-leaderboard">
-            <h3>leaderboard here</h3>
+            // <h3>Leaderboard</h3>
+            // <table>
+            //     {{each leaderboard}}
+            //         <tr>
+            //             <td>{{ username }}<td>
+            //             <td>{{ score }}</td>
+            //         </tr>
+            // </table>
         </div>
 
         <button class="btn btn--retake" id="retake-quiz">Retake the Quiz</button>
        
     </script>
-
 
     <!-- Error Template -->
     <script id="quiz-error-template" type="x-handlebars-template">
@@ -71,7 +80,6 @@
         </div>
     </script>
 
-    <footer><a href="http://github.com/saethor">&copy;2015 Sæþór Hallgrímsson</a></footer>
 
     <script src="bower_components/jquery/dist/jquery.min.js"></script>
     <script src="bower_components/bootstrap-sass/assets/javascripts/bootstrap.min.js"></script>

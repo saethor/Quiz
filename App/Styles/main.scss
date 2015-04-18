@@ -16,6 +16,27 @@ body {
 }
 
 .quiz {
+
+    ////////////
+    // Alerts //
+    ////////////
+    &--alerts {
+        @extend .quiz-container;
+        min-height: 70px;
+
+        .error {
+            color: $secondary;
+            background-color: $danger;
+            padding: 20px;
+            font-size: 1.2em;
+
+            #close {
+                float: right;
+                cursor: pointer;
+            }
+        }
+    }
+
     &--container {
         max-width: 600px;
         margin: 20px auto;
@@ -175,6 +196,10 @@ body {
     &--next {
         @extend %btn-navigation;
         float: right;
+
+        span {
+            font-size: 0.8em;
+        }
     }
 
     &--prev {
@@ -207,25 +232,7 @@ body {
 
 
 
-////////////
-// Alerts //
-////////////
-.quiz-alerts {
-    @extend .quiz-container;
-    min-height: 70px;
 
-    .error {
-        color: $secondary;
-        background-color: $danger;
-        padding: 20px;
-        font-size: 1.2em;
-
-        #close {
-            float: right;
-            cursor: pointer;
-        }
-    }
-}
 
 
 footer {

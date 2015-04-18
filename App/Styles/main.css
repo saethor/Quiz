@@ -5,6 +5,16 @@ body {
   font-size: 16px;
   font-family: 'Roboto', sans-serif; }
 
+.quiz--alerts {
+  min-height: 70px; }
+  .quiz--alerts .error {
+    color: #ffeead;
+    background-color: #ff6f69;
+    padding: 20px;
+    font-size: 1.2em; }
+    .quiz--alerts .error #close {
+      float: right;
+      cursor: pointer; }
 .quiz--container {
   max-width: 600px;
   margin: 20px auto; }
@@ -123,6 +133,8 @@ body {
   cursor: pointer; }
   .btn--next {
     float: right; }
+    .btn--next span {
+      font-size: 0.8em; }
   .btn--prev {
     float: left;
     cursor: not-allowed; }
@@ -137,17 +149,6 @@ body {
     background-color: #51ad82; }
     .btn--retake:hover {
       background-color: #418a68; }
-
-.quiz-alerts {
-  min-height: 70px; }
-  .quiz-alerts .error {
-    color: #ffeead;
-    background-color: #ff6f69;
-    padding: 20px;
-    font-size: 1.2em; }
-    .quiz-alerts .error #close {
-      float: right;
-      cursor: pointer; }
 
 footer {
   text-align: center;
