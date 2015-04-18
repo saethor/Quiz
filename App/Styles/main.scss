@@ -15,9 +15,34 @@ body {
     font-family: 'Roboto', sans-serif;
 }
 
-.quiz-container {
-    max-width: 600px;
-    margin: 20px auto;
+.quiz {
+    &--container {
+        max-width: 600px;
+        margin: 20px auto;
+    }
+
+    &--username {
+        margin-top: 100px;
+        h1 {
+            font-size: 2em;
+            color: $primary;
+        }
+
+        input[type="text"] {
+            padding-bottom: 5px;
+            font-size: 1.5em;
+            width: 100%;
+            border: none;
+            border-bottom: 2px dashed $primary;
+            outline: none;
+
+            &:focus {
+                border-bottom-color: darken($primary, 20%);
+            }
+        }
+
+    }
+
 }
 
 .question {
@@ -123,6 +148,11 @@ body {
     &:hover {
         background-color: darken($primary, 20%);
     }
+
+    &:disabled {
+        cursor: not-allowed;
+        background-color: $primary;
+    }
 }
 
 .btn-container:before {
@@ -141,34 +171,41 @@ body {
     text-align: center;
 
     cursor: pointer;
-}
 
-.btn-next {
-    @extend %btn-navigation;
-    float: right;
-}
+    &--next {
+        @extend %btn-navigation;
+        float: right;
+    }
 
-.btn-prev {
-    @extend %btn-navigation;
-    float: left;
-    cursor: not-allowed;
-}
+    &--prev {
+        @extend %btn-navigation;
+        float: left;
+        cursor: not-allowed;
+    }
 
-.btn-retake {
-    color: $secondary;
-    outline: none;
+    &--start {
+        @extend %btn-navigation;
+        width: 100%;
+    }
 
-    font-size: 1.3em;
+    &--retake {
+        color: $secondary;
+        outline: none;
 
-    width: 100%;
-    padding: 30px;
+        font-size: 1.3em;
 
-    background-color: darken($primary, 20%);
+        width: 100%;
+        padding: 30px;
 
-    &:hover {
-        background-color: darken($primary, 30%);
+        background-color: darken($primary, 20%);
+
+        &:hover {
+            background-color: darken($primary, 30%);
+        }
     }
 }
+
+
 
 ////////////
 // Alerts //

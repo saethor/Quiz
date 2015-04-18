@@ -9,8 +9,8 @@ Quiz = {
     settings: {
         points: 0,                                      // How many right answeres user has
         answeredQuestions: [],                          // All the questions user has answerd and what he answered
-        quizContainer: $('.quiz-container'),            // Selector for the quiz container
-        alertContainer: $('.quiz-alerts'),              // Selector for alert container
+        quizContainer: $('.quiz--container'),            // Selector for the quiz container
+        alertContainer: $('.quiz--alerts'),              // Selector for alert container
         questionView: $("#question-template").html(),   // QuestionView Template
         finishedView: $("#quiz-finished").html(),       // FinishedView Template
         errorView: $("#quiz-error-template").html()     // ErrorView Template
@@ -20,8 +20,9 @@ Quiz = {
      * Initializes the quiz
      * @return {void} Returns nothing
      */
-    init: function() {
+    init: function(username) {
         s = this.settings;
+        s.username = username;
 
         // Gets random question and displays it to the user
         var context = this.questions[Math.floor(Math.random() * this.questions.length)];
