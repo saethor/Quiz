@@ -32,6 +32,26 @@ body {
     outline: none; }
     .quiz--username input[type="text"]:focus {
       border-bottom-color: #51ad82; }
+.quiz--leaderboard {
+  border-collapse: collapse;
+  width: 100%; }
+  .quiz--leaderboard th {
+    text-align: left;
+    font-weight: 400;
+    font-size: 1.5em; }
+  .quiz--leaderboard tbody tr {
+    -webkit-transition: all 0.3 ease;
+            transition: all 0.3 ease; }
+    .quiz--leaderboard tbody tr:hover {
+      background-color: #96ceb4;
+      color: #ffeead; }
+  .quiz--leaderboard td {
+    padding: 10px 5px;
+    border-bottom: 1px solid #96ceb4; }
+  .quiz--leaderboard td:first-child {
+    width: 90%; }
+  .quiz--leaderboard td:last-child {
+    text-align: right; }
 
 .question, .quiz-results {
   border-bottom: 1px solid #ffeead;

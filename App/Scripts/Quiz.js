@@ -23,6 +23,7 @@ Quiz = {
     init: function(username) {
         s = this.settings;
         s.username = username;
+        this.bindKeys();
 
         // Gets random question and displays it to the user
         var context = this.questions[Math.floor(Math.random() * this.questions.length)];
@@ -31,7 +32,9 @@ Quiz = {
         this.template(s.questionView, context, s.quizContainer);
 
         // Adds the function for user to answer the question
-        this.bindUIActions(context);
+        this.bindUIActions();
+
+        this.currentQuestion = context;
     },
 
     /**
@@ -39,6 +42,8 @@ Quiz = {
      * @return {void} Returns nothng
      */
     update: function() {
+        localStorage.setItem(s.username, s.points);
+
         if (Quiz.questions.length !== s.answeredQuestions.length) {
 
             // Gets random question and displays it to the user
@@ -52,7 +57,9 @@ Quiz = {
             this.template(s.questionView, context, s.quizContainer);
 
             // Adds the function for user to answer the question
-            this.bindUIActions(context);
+            this.bindUIActions();
+
+            this.currentQuestion = context;
         }
         else {
             // Returns finish view with information
@@ -94,66 +101,14 @@ Quiz = {
      * @param  {object} context 
      * @return {void}         Returns nothing
      */
-    bindUIActions: function(context) { 
+    bindUIActions: function() { 
         // When user clicks next question it should check if he has answeread,
         // if so it should check if hi is right and increment his score, else
         // it should display a error 
         $('#next-question').click(function(e) {
             e.preventDefault();
 
-            // Gets the answere user choose
-            var answerButton = $('input[name=' + context.id + ']:checked')
-
-            //  Gets the checked radiobutton
-            var answer = Number(answerButton.val());
-
-            //  Checks if it is a number, if not user has not answered
-            if (isNaN(answer) === false) {
-
-                //  Checks how smart user is
-                if (answer === context.correctAnswer) {
-                    s.points++;
-
-                    answerButton.next('label').addClass('rightAnswere'); // Shows the user that his answere is right
-                } 
-                else {
-                    $('#'+context.correctAnswer).next().addClass('rightAnswere'); // Shows the right answere
-                    answerButton.next('label').addClass('wrongAnswere'); // Shows user that his answere is wrong
-                }
-
-                s.answeredQuestions.push([context.id, answer]); // Adds question and answered to array
-
-                $('#next-question').html('5 Next Question');
-
-                $('#next-question').click(function() {
-                    clearTimeout(timeout);
-                    Quiz.update();
-                });
-
-                var i = 5;
-                var interval = setInterval(function() {
-                    i--;
-                    if (i === 0)
-                    {
-                        clearInterval(interval);
-                        Quiz.update();
-                    }
-                    $('#next-question').html(i + ' Next Question').click(function(event) {
-                        clearInterval(interval);
-                        Quiz.update();
-                    });
-                }, 1000)
-
-                // Updates the View after 3500 ms
-                var timeout;/* = setTimeout(function() {
-                    Quiz.update();
-                }, 3000);*/
-                
-                Quiz.displayMessage('clear'); // Clears error message if there is any
-            }
-            else {
-                Quiz.displayMessage('Please chooce a answer!'); //  User has not answere, error displayd
-            }
+            Quiz.nextQuestion();
         });
 
         //  Event listener for close button on errors
@@ -162,14 +117,100 @@ Quiz = {
         });
     },
 
+    nextQuestion: function() {
+        var context = this.currentQuestion;
+
+        // Gets the answere user choose
+        var answerButton = $('input[name=' + context.id + ']:checked')
+
+        //  Gets the checked radiobutton
+        var answer = Number(answerButton.val());
+
+        //  Checks if it is a number, if not user has not answered
+        if (isNaN(answer) === false) {
+
+            //  Checks how smart user is
+            if (answer === context.correctAnswer) {
+                s.points++;
+
+                answerButton.next('label').addClass('rightAnswere'); // Shows the user that his answere is right
+            } 
+            else {
+                $('#'+context.correctAnswer).next().addClass('rightAnswere'); // Shows the right answere
+                answerButton.next('label').addClass('wrongAnswere'); // Shows user that his answere is wrong
+            }
+
+            s.answeredQuestions.push([context.id, answer]); // Adds question and answered to array
+
+            setTimeout(function() {
+                Quiz.update();
+            }, 1000); 
+
+            
+            Quiz.displayMessage('clear'); // Clears error message if there is any
+        }
+        else {
+            Quiz.displayMessage('Please chooce a answer!'); //  User has not answere, error displayd
+        }
+    },
+
+    bindKeys: function() {
+        document.onkeypress = function(e) {
+            e = e || window.event;
+
+            var button;
+
+            switch (e.which) {
+                case 13:
+                    Quiz.nextQuestion();
+                    break;
+
+                case 27: 
+                    Quiz.finished();
+                    break;
+                case 49:
+                    if (button = $('.choice#0')) {
+                        button.attr('checked', 'true');
+                    }
+                    break;
+                case 50: 
+                    if (button = $('.choice#1')) {
+                        button.attr('checked', 'true');
+                    }
+                    break;
+                case 51: 
+                    if (button = $('.choice#2')) {
+                        button.attr('checked', 'true');
+                    }
+                    break;
+                case 52:
+                    if (button = $('.choice#3')) {
+                        button.attr('checked', 'true');
+                    }
+                    break;
+                case 53:
+                    if (button = $('.choice#4')) {
+                        button.attr('checked', 'true');
+                    }
+                    break;
+                case 54:
+                    if (button = $('.choice#5')) {
+                        button.attr('checked', 'true');
+                    } else {console.log('undefined');}
+                    break;
+            }
+        }
+    },
+
     /**
      * Displays the finished view
      * @return {void} nothing returns
      */
     finished: function() {
+        s._localStorage = getLocalStorage();
 
         // Loads the right template
-        this.template(s.finishedView, this.settings, s.quizContainer);
+        this.template(s.finishedView, s, s.quizContainer);
 
         //  Event listener for retake quiz button
         $('#retake-quiz').click(function(e) {
@@ -254,3 +295,11 @@ Quiz = {
 Handlebars.registerHelper('finalPoints', function() {
     return s.points + '/' + Quiz.questions.length;
 });
+
+function getLocalStorage() {
+    var _localStorage = {}
+    for (var i = 0; i < localStorage.length; i++) {
+        _localStorage[localStorage.key(i)] = localStorage.getItem(localStorage.key(i));
+    }
+    return _localStorage;
+}

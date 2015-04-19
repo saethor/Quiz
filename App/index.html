@@ -56,16 +56,20 @@
             <h1>Congratulation you finished the quiz!</h1>
             <h2>You scored {{finalPoints s}}</h2>
         </div>
+        <div class="leaderboard">
+            <table class="quiz--leaderboard">
+            <thead>
+            <tr><th>User</th><th>Score</th>
+            </thead>
+            <tbody>
+            {{#each _localStorage}}
+                <tr>
+                <td>{{@key}}</td><td>{{this}}</td>
 
-        <div class="quiz-leaderboard">
-            // <h3>Leaderboard</h3>
-            // <table>
-            //     {{each leaderboard}}
-            //         <tr>
-            //             <td>{{ username }}<td>
-            //             <td>{{ score }}</td>
-            //         </tr>
-            // </table>
+                </tr>
+            {{/each}}
+            <tbody>
+            </table
         </div>
 
         <button class="btn btn--retake" id="retake-quiz">Retake the Quiz</button>

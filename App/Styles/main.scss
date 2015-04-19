@@ -64,6 +64,36 @@ body {
 
     }
 
+    &--leaderboard {
+        border-collapse: collapse;
+        width: 100%;
+
+        th {
+            text-align: left;
+            font-weight: 400;
+            font-size: 1.5em;
+        }
+        tbody tr {
+            &:hover {
+                background-color: $primary;
+                color: $secondary;
+            }
+            transition: all 0.3 ease;
+
+        }
+        td {
+            padding: 10px 5px;            
+            border-bottom: 1px solid $primary;
+        }
+        td:first-child {
+            width: 90%;
+        }
+        td:last-child {
+            text-align: right;
+        }
+
+    }
+
 }
 
 .question {
