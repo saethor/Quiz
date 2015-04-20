@@ -27,7 +27,6 @@ Quiz = {
         s = this.settings;
         e = this.events;
         s.username = username;
-        this.bindKeys();
 
         this.update();
     },
@@ -125,6 +124,7 @@ Quiz = {
                 s.answeredQuestions.push([context.id, answer]); // Adds question and answered to array
                 
                 Quiz.displayMessage('clear'); // Clears error message if there is any
+
 
                 setTimeout(function() {
                     Quiz.update();
