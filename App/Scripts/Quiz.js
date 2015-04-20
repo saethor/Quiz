@@ -172,6 +172,10 @@ Quiz = {
             s.answeredQuestions.push([context.id, answer]); // Adds question and answered to array
             
             Quiz.displayMessage('clear'); // Clears error message if there is any
+
+            setTimeout(function() {
+                Quiz.update();
+            }, 1500);
         }
         else {
             Quiz.displayMessage('Please chooce a answer!'); //  User has not answere, error displayd
@@ -179,11 +183,7 @@ Quiz = {
     },
 
     nextQuestion: function() {
-        Quiz.checkAnswere();
-
-        setTimeout(function() {
-            Quiz.update();
-        }, 1500);
+        Quiz.checkAnswere();        
     },
 
     bindKeys: function() {
@@ -230,8 +230,6 @@ Quiz = {
             temp_userScore = 0;
             temp_username = user;
             temp_userAnsweres = JSON.parse(_localStorage[user]);
-            console.log(temp_userAnsweres);
-
             temp_userAnsweres.forEach(validateAnswere);
             Quiz.leaderboard[temp_username] = temp_userScore;
         }
@@ -266,7 +264,7 @@ Quiz = {
         switch(errorMessage) {
             // Clears alert View
             case 'clear':
-                $('.quiz-alerts').html('');
+                $('.quiz--alerts').html('');
                 break;
 
             default:
