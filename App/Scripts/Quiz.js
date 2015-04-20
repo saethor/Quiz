@@ -1,5 +1,8 @@
+/* global $:false, localStorage: false, Handlebars: false, document: false, window: false, console.log: false, setTimeout: false;*/
+
 'use strict';
 var s, // access to settings
+e, // access events
 Quiz = {
 
     /**
@@ -11,9 +14,9 @@ Quiz = {
         answeredQuestions: [],                          // All the questions user has answerd and what he answered
         quizContainer: $('.quiz--container'),            // Selector for the quiz container
         alertContainer: $('.quiz--alerts'),              // Selector for alert container
-        questionView: $("#question-template").html(),   // QuestionView Template
-        finishedView: $("#quiz-finished").html(),       // FinishedView Template
-        errorView: $("#quiz-error-template").html()     // ErrorView Template
+        questionView: $('#question-template').html(),   // QuestionView Template
+        finishedView: $('#quiz-finished').html(),       // FinishedView Template
+        errorView: $('#quiz-error-template').html()     // ErrorView Template
     },
 
     /**
@@ -22,19 +25,11 @@ Quiz = {
      */
     init: function(username) {
         s = this.settings;
+        e = this.events;
         s.username = username;
         this.bindKeys();
 
-        // Gets random question and displays it to the user
-        var context = this.questions[Math.floor(Math.random() * this.questions.length)];
-
-        // Loads the template
-        this.template(s.questionView, context, s.quizContainer);
-
-        // Adds the function for user to answer the question
-        this.bindUIActions();
-
-        this.currentQuestion = context;
+        this.update();
     },
 
     /**
@@ -42,7 +37,9 @@ Quiz = {
      * @return {void} Returns nothng
      */
     update: function() {
-        localStorage.setItem(s.username, s.points);
+        localStorage.setItem(s.username, JSON.stringify(s.answeredQuestions));
+
+        document.addEventListener('keydown', this.events.bindKeys);
 
         if (Quiz.questions.length !== s.answeredQuestions.length) {
 
@@ -57,9 +54,11 @@ Quiz = {
             this.template(s.questionView, context, s.quizContainer);
 
             // Adds the function for user to answer the question
-            this.bindUIActions();
+            //this.bindUIActions();
 
             this.currentQuestion = context;
+            document.getElementById('next-question').addEventListener('click', e.nxt, false);
+
         }
         else {
             // Returns finish view with information
@@ -96,32 +95,62 @@ Quiz = {
         return false;
     },
 
-    /**
-     * UI actions for the quiz
-     * @param  {object} context 
-     * @return {void}         Returns nothing
-     */
-    bindUIActions: function() { 
-        // When user clicks next question it should check if he has answeread,
-        // if so it should check if hi is right and increment his score, else
-        // it should display a error 
-        $('#next-question').click(function(e) {
-            e.preventDefault();
-
+    events: {
+        nxt: function(evt) {
+            evt.preventDefault();
             Quiz.nextQuestion();
-        });
+        },
 
-        //  Event listener for close button on errors
-        $('#close').click(function(e) {
-            Quiz.displayMessage('clear'); // Clears error view
-        });
+        prv: function(evt) {
+            evt.preventDefault();
+        },
+
+        restart: function(evt) {
+            evt.preventDefault();
+            s.answeredQuestions = [];
+            s.points = 0;
+
+            // Updates the quiz view
+            Quiz.update();
+        },
+
+        closeError: function(evt) {
+            evt.preventDefault();
+            Quiz.displayMessage('clear');
+        },
+
+        bindKeys: function(evt) {
+            switch(evt.which) {
+                case 13:
+                    e.nxt(evt);
+                    break;
+                case 49:
+                    document.getElementById('0').checked = true;
+                    break;
+                case 50: 
+                    document.getElementById('1').checked = true;
+                    break;
+                case 51:
+                    document.getElementById('2').checked = true;
+                    break;
+                case 52:
+                    document.getElementById('3').checked = true;
+                    break;
+                case 53:
+                    document.getElementById('4').checked = true;
+                    break;
+                case 54:
+                    document.getElementById('5').checked = true;
+                    break;
+            }
+        },
     },
 
     checkAnswere: function() {
         var context = this.currentQuestion;
 
         // Gets the answere user choose
-        var answerButton = $('input[name=' + context.id + ']:checked')
+        var answerButton = $('input[name=' + context.id + ']:checked');
 
         //  Gets the checked radiobutton
         var answer = Number(answerButton.val());
@@ -151,62 +180,14 @@ Quiz = {
 
     nextQuestion: function() {
         Quiz.checkAnswere();
-        Quiz.update();
+
+        setTimeout(function() {
+            Quiz.update();
+        }, 1500);
     },
 
     bindKeys: function() {
-        document.onkeypress = function(e) {
-            e = e || window.event;
 
-            var button;
-
-            switch (e.which) {
-                case 13:
-                    Quiz.nextQuestion();
-                    break;
-
-                case 27: 
-                    Quiz.finished();
-                    break;
-                case 49:
-                    button = $('.choice#0');
-                    if (button.length) {
-                        button.attr('checked', 'false');
-                        button.attr('checked', 'true');
-                    }
-                    break;
-                case 50: 
-                    button = $('.choice#1');
-                    if (button.length) {
-                        button.attr('checked', 'true');
-                    }
-                    break;
-                case 51:
-                    button = $('.choice#2'); 
-                    if (button.length) {
-                        button.attr('checked', 'true');
-                    }
-                    break;
-                case 52:
-                    button = $('.choice#3');
-                    if (button.length) {
-                        button.attr('checked', 'true');
-                    }
-                    break;
-                case 53:
-                    button = $('.choice#4');
-                    if (button.length) {
-                        button.attr('checked', 'true');
-                    }
-                    break;
-                case 54:
-                    button = $('.choice#5');
-                    if (button.length) {
-                        button.attr('checked', 'true');
-                    }
-                    break;
-            }
-        }
     },
 
     /**
@@ -214,13 +195,14 @@ Quiz = {
      * @return {void} nothing returns
      */
     finished: function() {
-        s._localStorage = getLocalStorage();
+        s._localStorage = this.getLocalStorage();
+        this.getScore();
 
         // Loads the right template
-        this.template(s.finishedView, s, s.quizContainer);
+        this.template(s.finishedView, this, s.quizContainer);
 
         //  Event listener for retake quiz button
-        $('#retake-quiz').click(function(e) {
+        $('#retake-quiz').click(function() {
 
             // Initializes answeredQuestions and points to 0
             s.answeredQuestions = [];
@@ -232,14 +214,54 @@ Quiz = {
         
     },
 
+    // Calculates total score for a user based on localstorage json string 
+    getScore: function() {
+        var _localStorage = this.getLocalStorage(),
+            _questions = this.questions,
+            temp_quest,
+            temp_username,
+            temp_userAnsweres,
+            temp_userScore;
+
+        this.leaderboard = {};
+
+        // Loops through each user
+        for (var user in _localStorage) {
+            temp_userScore = 0;
+            temp_username = user;
+            temp_userAnsweres = JSON.parse(_localStorage[user]);
+            console.log(temp_userAnsweres);
+
+            temp_userAnsweres.forEach(validateAnswere);
+            Quiz.leaderboard[temp_username] = temp_userScore;
+        }
+
+        function validateAnswere(answere) {
+            for (var question in _questions) {
+                temp_quest = _questions[question];
+
+                if (temp_quest.id === answere[0]) {
+                    if (temp_quest.correctAnswer === answere[1])
+                        temp_userScore++;
+                }
+            }
+        }
+    },
+
+    getLocalStorage: function() {
+        var _localStorage = {};
+        for (var i = 0; i < localStorage.length; i++) {
+            _localStorage[localStorage.key(i)] = localStorage.getItem(localStorage.key(i));
+        }
+        return _localStorage;
+    },
+
     /**
      * Displays error message and clears them at the top of the page
      * @param  {string} errorMessage 
      * @return {void}              Returns nothing
      */
     displayMessage: function(errorMessage) {
-        
-
         // Gets random question and displays it to the user
         switch(errorMessage) {
             // Clears alert View
@@ -250,6 +272,7 @@ Quiz = {
             default:
                 // Loads error with errorMessage as a message
                 this.template(s.errorView, { error: errorMessage}, s.alertContainer);
+                document.getElementById('close').addEventListener('click', this.events.closeError);
                 break;
         }  
     },
@@ -302,11 +325,3 @@ Quiz = {
 Handlebars.registerHelper('finalPoints', function() {
     return s.points + '/' + Quiz.questions.length;
 });
-
-function getLocalStorage() {
-    var _localStorage = {}
-    for (var i = 0; i < localStorage.length; i++) {
-        _localStorage[localStorage.key(i)] = localStorage.getItem(localStorage.key(i));
-    }
-    return _localStorage;
-}

@@ -18,10 +18,11 @@
 
     $('#start-quiz').click(function(e) {
         e.preventDefault();
+        startGame();
     });
 
     function startGame() {
-        var username = $('#username').val()
+        var username = $('#username').val();
 
         if (username !== '') {
             Quiz.init(username);
