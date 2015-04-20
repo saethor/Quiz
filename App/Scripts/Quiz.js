@@ -10,13 +10,13 @@ Quiz = {
      * @type {Object}
      */
     settings: {
-        points: 0,                                      // How many right answeres user has
-        answeredQuestions: [],                          // All the questions user has answerd and what he answered
-        quizContainer: $('.quiz--container'),            // Selector for the quiz container
-        alertContainer: $('.quiz--alerts'),              // Selector for alert container
-        questionView: $('#question-template').html(),   // QuestionView Template
-        finishedView: $('#quiz-finished').html(),       // FinishedView Template
-        errorView: $('#quiz-error-template').html()     // ErrorView Template
+        points: 0,                                                              // How many right answeres user has
+        answeredQuestions: [],                                                  // All the questions user has answerd and what he answered
+        quizContainer: document.getElementById('quiz'),                         // Selector for the quiz container
+        alertContainer: document.getElementById('alerts'),                      // Selector for alert container
+        questionView: document.getElementById('question-template').innerHTML,   // QuestionView Template
+        finishedView: document.getElementById('quiz-finished').innerHTML,       // FinishedView Template
+        errorView: document.getElementById('quiz-error-template').innerHTML     // ErrorView Template
     },
 
     /**
@@ -79,7 +79,7 @@ Quiz = {
         var source = inputSource; // Gets the quiz view    
         var template = Handlebars.compile(source); // Compiles the view  
         var context = inputContext; // Gets random question and displays it to the user
-        outputHtml.html(template(context)); // Appends the view to the index
+        outputHtml.innerHTML = template(context); // Appends the view to the index
     },
 
     /**
@@ -99,13 +99,13 @@ Quiz = {
     events: {
         nxt: function(evt) {
             evt.preventDefault();
-            var context = this.currentQuestion;
+            var context = Quiz.currentQuestion;
 
             // Gets the answere user choose
-            var answerButton = $('input[name=' + context.id + ']:checked');
+            var answerButton = document.querySelector('input[name="' + context.id + '"]:checked');
 
             //  Gets the checked radiobutton
-            var answer = Number(answerButton.val());
+            var answer = Number(answerButton.value);
 
             //  Checks if it is a number, if not user has not answered
             if (isNaN(answer) === false) {
@@ -114,11 +114,11 @@ Quiz = {
                 if (answer === context.correctAnswer) {
                     s.points++;
 
-                    answerButton.next('label').addClass('rightAnswere'); // Shows the user that his answere is right
+                    answerButton.nextElementSibling.className += ' rightAnswere'; // Shows the user that his answere is right
                 } 
                 else {
-                    $('#'+context.correctAnswer).next().addClass('rightAnswere'); // Shows the right answere
-                    answerButton.next('label').addClass('wrongAnswere'); // Shows user that his answere is wrong
+                    document.getElementById(context.correctAnswer).nextElementSibling.className = ' rightAnswere'; // Shows the right answere
+                    answerButton.nextElementSibling.className += 'wrongAnswere'; // Shows user that his answere is wrong
                 }
 
                 s.answeredQuestions.push([context.id, answer]); // Adds question and answered to array
@@ -200,16 +200,11 @@ Quiz = {
         this.template(s.finishedView, this, s.quizContainer);
 
         //  Event listener for retake quiz button
-        $('#retake-quiz').click(function() {
-
-            // Initializes answeredQuestions and points to 0
+        document.getElementById('retake-quiz').addEventListener('click', function() {
             s.answeredQuestions = [];
-            s.points = 0;
-
-            // Updates the quiz view
+            s.points = [];
             Quiz.update();
         });
-        
     },
 
     // Calculates total score for a user based on localstorage json string 
@@ -270,7 +265,7 @@ Quiz = {
         switch(errorMessage) {
             // Clears alert View
             case 'clear':
-                $('.quiz--alerts').html('');
+                document.getElementsByClassName('.quiz--alerts').innerHTML = '';
                 break;
 
             default:
