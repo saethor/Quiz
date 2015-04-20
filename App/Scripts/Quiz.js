@@ -117,7 +117,7 @@ Quiz = {
         });
     },
 
-    nextQuestion: function() {
+    checkAnswere: function() {
         var context = this.currentQuestion;
 
         // Gets the answere user choose
@@ -141,17 +141,17 @@ Quiz = {
             }
 
             s.answeredQuestions.push([context.id, answer]); // Adds question and answered to array
-
-            setTimeout(function() {
-                Quiz.update();
-            }, 1000); 
-
             
             Quiz.displayMessage('clear'); // Clears error message if there is any
         }
         else {
             Quiz.displayMessage('Please chooce a answer!'); //  User has not answere, error displayd
         }
+    },
+
+    nextQuestion: function() {
+        Quiz.checkAnswere();
+        Quiz.update();
     },
 
     bindKeys: function() {
@@ -169,34 +169,41 @@ Quiz = {
                     Quiz.finished();
                     break;
                 case 49:
-                    if (button = $('.choice#0')) {
+                    button = $('.choice#0');
+                    if (button.length) {
+                        button.attr('checked', 'false');
                         button.attr('checked', 'true');
                     }
                     break;
                 case 50: 
-                    if (button = $('.choice#1')) {
+                    button = $('.choice#1');
+                    if (button.length) {
                         button.attr('checked', 'true');
                     }
                     break;
-                case 51: 
-                    if (button = $('.choice#2')) {
+                case 51:
+                    button = $('.choice#2'); 
+                    if (button.length) {
                         button.attr('checked', 'true');
                     }
                     break;
                 case 52:
-                    if (button = $('.choice#3')) {
+                    button = $('.choice#3');
+                    if (button.length) {
                         button.attr('checked', 'true');
                     }
                     break;
                 case 53:
-                    if (button = $('.choice#4')) {
+                    button = $('.choice#4');
+                    if (button.length) {
                         button.attr('checked', 'true');
                     }
                     break;
                 case 54:
-                    if (button = $('.choice#5')) {
+                    button = $('.choice#5');
+                    if (button.length) {
                         button.attr('checked', 'true');
-                    } else {console.log('undefined');}
+                    }
                     break;
             }
         }
