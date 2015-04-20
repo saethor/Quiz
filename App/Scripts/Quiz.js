@@ -35,31 +35,38 @@ Quiz = {
      * Updates for new question or game finished
      * @return {void} Returns nothng
      */
-    update: function() {
+    update: function(question) {
         localStorage.setItem(s.username, JSON.stringify(s.answeredQuestions));
+       
+
 
         document.addEventListener('keydown', this.events.bindKeys);
+        // Gets random question and displays it to the user
+        var context;
 
         if (Quiz.questions.length !== s.answeredQuestions.length) {
 
-            // Gets random question and displays it to the user
-            var context;
-            do {
-                // returns random question
-                context = this.questions[Math.floor(Math.random() * this.questions.length)];
-            } while (Quiz.isAnswered(context.id, s.answeredQuestions)); // Checks if question has been answered
-
+            if (question === undefined) {
+                
+                do {
+                    // returns random question
+                    context = this.questions[Math.floor(Math.random() * this.questions.length)];
+                } while (Quiz.isAnswered(context.id, s.answeredQuestions)); // Checks if question has been answered
+            } else {
+                context = question;
+            }
             // Loads the template
             this.template(s.questionView, context, s.quizContainer);
 
-            // Adds the function for user to answer the question
-            //this.bindUIActions();
+             if (s.answeredQuestions.length > 0) {
+                document.getElementById('prev-question').disabled = false; 
+            } else {
+                document.getElementById('prev-question').disabled = true;
+            }
 
             this.currentQuestion = context;
             document.getElementById('next-question').addEventListener('click', e.nxt, false);
             document.getElementById('prev-question').addEventListener('click', e.prv, false);
-
-
         }
         else {
             // Returns finish view with information
@@ -114,11 +121,11 @@ Quiz = {
                 if (answer === context.correctAnswer) {
                     s.points++;
 
-                    answerButton.nextElementSibling.className += ' rightAnswere'; // Shows the user that his answere is right
+                    answerButton.nextElementSibling.className = ' rightAnswere'; // Shows the user that his answere is right
                 } 
                 else {
                     document.getElementById(context.correctAnswer).nextElementSibling.className = ' rightAnswere'; // Shows the right answere
-                    answerButton.nextElementSibling.className += 'wrongAnswere'; // Shows user that his answere is wrong
+                    answerButton.nextElementSibling.className = 'wrongAnswere'; // Shows user that his answere is wrong
                 }
 
                 s.answeredQuestions.push([context.id, answer]); // Adds question and answered to array
@@ -137,14 +144,22 @@ Quiz = {
 
         prv: function(evt) {
             evt.preventDefault();
+
             var prv = s.answeredQuestions[s.answeredQuestions.length -1];
+            var prvQuestion = Quiz.questions[prv[0]];
+
             Quiz.template(s.questionView, Quiz.questions[prv[0]], s.quizContainer);
             
             if (Quiz.validateAnswere(prv)) {
-                document.getElementById(prv[1]).nextElementSibling.className += 'rightAnswere';
+                document.getElementById(prv[1]).nextElementSibling.className = 'rightAnswere';
             } else {
-                document.getElementById(prv[1]).nextElementSibling.className += 'wrongAnswere';
+                document.getElementById(prvQuestion.correctAnswer).nextElementSibling.className = 'rightAnswere';
+                document.getElementById(prv[1]).nextElementSibling.className = 'wrongAnswere';
             }
+
+            document.getElementById('next-question').addEventListener('click', function() {
+                Quiz.update(Quiz.currentQuestion);
+            });
         },
 
         restart: function(evt) {
