@@ -37,10 +37,7 @@ Quiz = {
      */
     update: function(question) {
         localStorage.setItem(s.username, JSON.stringify(s.answeredQuestions));
-       
-
-
-        document.addEventListener('keydown', this.events.bindKeys);
+    
         // Gets random question and displays it to the user
         var context;
 
@@ -65,6 +62,7 @@ Quiz = {
             }
 
             this.currentQuestion = context;
+            document.addEventListener('keydown', this.events.bindKeys);
             document.getElementById('next-question').addEventListener('click', e.nxt, false);
             document.getElementById('prev-question').addEventListener('click', e.prv, false);
         }
@@ -112,10 +110,10 @@ Quiz = {
             var answerButton = document.querySelector('input[name="' + context.id + '"]:checked');
 
             //  Gets the checked radiobutton
-            var answer = Number(answerButton.value);
+            var answer = (answerButton) ? Number(answerButton.value) : -1;
 
             //  Checks if it is a number, if not user has not answered
-            if (isNaN(answer) === false) {
+            if (isNaN(answer) === false && answer !== -1) {
 
                 //  Checks how smart user is
                 if (answer === context.correctAnswer) {
@@ -132,6 +130,8 @@ Quiz = {
                 
                 Quiz.displayMessage('clear'); // Clears error message if there is any
 
+                document.removeEventListener('keydown', e.nxt, false);
+                document.getElementById('next-question').removeEventListener('click', e.nxt, false);
 
                 setTimeout(function() {
                     Quiz.update();
@@ -145,21 +145,27 @@ Quiz = {
         prv: function(evt) {
             evt.preventDefault();
 
-            var prv = s.answeredQuestions[s.answeredQuestions.length -1];
-            var prvQuestion = Quiz.questions[prv[0]];
+            if (s.answeredQuestions.length > 0) {
+                var prv = s.answeredQuestions[s.answeredQuestions.length -1];
+                var prvQuestion = Quiz.questions[prv[0]];
 
-            Quiz.template(s.questionView, Quiz.questions[prv[0]], s.quizContainer);
-            
-            if (Quiz.validateAnswere(prv)) {
-                document.getElementById(prv[1]).nextElementSibling.className = 'rightAnswere';
-            } else {
-                document.getElementById(prvQuestion.correctAnswer).nextElementSibling.className = 'rightAnswere';
-                document.getElementById(prv[1]).nextElementSibling.className = 'wrongAnswere';
+                Quiz.template(s.questionView, Quiz.questions[prv[0]], s.quizContainer);
+                
+                if (Quiz.validateAnswere(prv)) {
+                    document.getElementById(prv[1]).nextElementSibling.className = 'rightAnswere';
+                } else {
+                    document.getElementById(prvQuestion.correctAnswer).nextElementSibling.className = 'rightAnswere';
+                    document.getElementById(prv[1]).nextElementSibling.className = 'wrongAnswere';
+                }
+
+                document.getElementById('next-question').addEventListener('click', function() {
+                    Quiz.update(Quiz.currentQuestion);
+                });
+                document.removeEventListener('keydown', e.nxt, false);
+                document.addEventListener('keydown', function() {
+                    Quiz.update(Quiz.currentQuestion);
+                });
             }
-
-            document.getElementById('next-question').addEventListener('click', function() {
-                Quiz.update(Quiz.currentQuestion);
-            });
         },
 
         restart: function(evt) {
@@ -179,6 +185,12 @@ Quiz = {
         bindKeys: function(evt) {
             switch(evt.which) {
                 case 13:
+                    e.nxt(evt);
+                    break;
+                case 37:
+                    e.prv(evt);
+                    break;
+                case 39:
                     e.nxt(evt);
                     break;
                 case 49:
@@ -280,7 +292,7 @@ Quiz = {
         switch(errorMessage) {
             // Clears alert View
             case 'clear':
-                document.getElementsByClassName('.quiz--alerts').innerHTML = '';
+                document.getElementById('alerts').innerHTML = '';
                 break;
 
             default:
