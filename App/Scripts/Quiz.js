@@ -58,6 +58,8 @@ Quiz = {
 
             this.currentQuestion = context;
             document.getElementById('next-question').addEventListener('click', e.nxt, false);
+            document.getElementById('prev-question').addEventListener('click', e.prv, false);
+
 
         }
         else {
@@ -98,11 +100,51 @@ Quiz = {
     events: {
         nxt: function(evt) {
             evt.preventDefault();
-            Quiz.nextQuestion();
+            var context = this.currentQuestion;
+
+            // Gets the answere user choose
+            var answerButton = $('input[name=' + context.id + ']:checked');
+
+            //  Gets the checked radiobutton
+            var answer = Number(answerButton.val());
+
+            //  Checks if it is a number, if not user has not answered
+            if (isNaN(answer) === false) {
+
+                //  Checks how smart user is
+                if (answer === context.correctAnswer) {
+                    s.points++;
+
+                    answerButton.next('label').addClass('rightAnswere'); // Shows the user that his answere is right
+                } 
+                else {
+                    $('#'+context.correctAnswer).next().addClass('rightAnswere'); // Shows the right answere
+                    answerButton.next('label').addClass('wrongAnswere'); // Shows user that his answere is wrong
+                }
+
+                s.answeredQuestions.push([context.id, answer]); // Adds question and answered to array
+                
+                Quiz.displayMessage('clear'); // Clears error message if there is any
+
+                setTimeout(function() {
+                    Quiz.update();
+                }, 1500);
+            }
+            else {
+                Quiz.displayMessage('Please chooce a answer!'); //  User has not answere, error displayd
+            }
         },
 
         prv: function(evt) {
             evt.preventDefault();
+            var prv = s.answeredQuestions[s.answeredQuestions.length -1];
+            Quiz.template(s.questionView, Quiz.questions[prv[0]], s.quizContainer);
+            
+            if (Quiz.validateAnswere(prv)) {
+                document.getElementById(prv[1]).nextElementSibling.className += 'rightAnswere';
+            } else {
+                document.getElementById(prv[1]).nextElementSibling.className += 'wrongAnswere';
+            }
         },
 
         restart: function(evt) {
@@ -146,50 +188,6 @@ Quiz = {
         },
     },
 
-    checkAnswere: function() {
-        var context = this.currentQuestion;
-
-        // Gets the answere user choose
-        var answerButton = $('input[name=' + context.id + ']:checked');
-
-        //  Gets the checked radiobutton
-        var answer = Number(answerButton.val());
-
-        //  Checks if it is a number, if not user has not answered
-        if (isNaN(answer) === false) {
-
-            //  Checks how smart user is
-            if (answer === context.correctAnswer) {
-                s.points++;
-
-                answerButton.next('label').addClass('rightAnswere'); // Shows the user that his answere is right
-            } 
-            else {
-                $('#'+context.correctAnswer).next().addClass('rightAnswere'); // Shows the right answere
-                answerButton.next('label').addClass('wrongAnswere'); // Shows user that his answere is wrong
-            }
-
-            s.answeredQuestions.push([context.id, answer]); // Adds question and answered to array
-            
-            Quiz.displayMessage('clear'); // Clears error message if there is any
-
-            setTimeout(function() {
-                Quiz.update();
-            }, 1500);
-        }
-        else {
-            Quiz.displayMessage('Please chooce a answer!'); //  User has not answere, error displayd
-        }
-    },
-
-    nextQuestion: function() {
-        Quiz.checkAnswere();        
-    },
-
-    bindKeys: function() {
-
-    },
-
     /**
      * Displays the finished view
      * @return {void} nothing returns
@@ -217,8 +215,6 @@ Quiz = {
     // Calculates total score for a user based on localstorage json string 
     getScore: function() {
         var _localStorage = this.getLocalStorage(),
-            _questions = this.questions,
-            temp_quest,
             temp_username,
             temp_userAnsweres,
             temp_userScore;
@@ -230,20 +226,30 @@ Quiz = {
             temp_userScore = 0;
             temp_username = user;
             temp_userAnsweres = JSON.parse(_localStorage[user]);
-            temp_userAnsweres.forEach(validateAnswere);
+            temp_userAnsweres.forEach(calculateScore);
             Quiz.leaderboard[temp_username] = temp_userScore;
         }
 
-        function validateAnswere(answere) {
-            for (var question in _questions) {
-                temp_quest = _questions[question];
-
-                if (temp_quest.id === answere[0]) {
-                    if (temp_quest.correctAnswer === answere[1])
-                        temp_userScore++;
-                }
+        function calculateScore(answere) {
+            if (Quiz.validateAnswere(answere)) {
+                temp_userScore++;
             }
         }
+
+    },
+
+    validateAnswere: function(answere) {
+        var _questions = Quiz.questions,
+            temp_quest;
+        for (var question in _questions) {
+            temp_quest = _questions[question];
+
+            if (temp_quest.id === answere[0]) {
+                if (temp_quest.correctAnswer === answere[1])
+                    return true;
+            }
+        }
+        return false;
     },
 
     getLocalStorage: function() {
