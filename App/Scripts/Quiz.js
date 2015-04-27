@@ -27,8 +27,10 @@ Quiz = {
         s = this.settings;
         e = this.events;
         s.username = username;
-
-        this.update();
+        XHR('data/questions.json', function(json) {
+            Quiz.questions = json.questions;
+            Quiz.update(); // Inside the callback so its waits after XHR is done fetching questions
+        });
     },
 
     /**
@@ -301,46 +303,7 @@ Quiz = {
                 document.getElementById('close').addEventListener('click', this.events.closeError);
                 break;
         }  
-    },
-
-    /**
-     * Array of objects containing questions
-     * @type {Array}
-     */
-    questions: [
-        {
-            id: 0,
-            question: "What is 7 * 10",
-            choices: [70, 80, 72, 32],
-            correctAnswer: 0
-        },
-        {
-            id: 1,
-            question: "What is 90 / 4",
-            choices: [25, 60, 22.5],
-            correctAnswer: 2
-        },
-        {
-            id: 2,
-            question: "What is 54 + 65",
-            choices: [112, 119, 540, 32, 115, 152],
-            correctAnswer: 1
-        },
-        {
-            id: 3,
-            question: "What does this question have many possible answers?",
-            choices: [1, 2, 3, 4],
-            correctAnswer: 3
-        },
-        {
-            id: 4,
-            question: "What is the answer to the Ultimate Question of Life, the Universe, and Everything",
-            choices: ["No one know", "The Bible", 42],
-            correctAnswer: 2
-        }
-    ]
-
-    
+    }
 };
 
 /**
@@ -351,3 +314,27 @@ Quiz = {
 Handlebars.registerHelper('finalPoints', function() {
     return s.points + '/' + Quiz.questions.length;
 });
+
+
+/**
+ * Ajax Wrapper JavaScript - The Definitive Guide (p.501)
+ * @param {string}   url      
+ * @param {Function} callback 
+ */
+function XHR(url, callback) {
+    var request = new XMLHttpRequest(); // Instatiate the XMLHttpRequest object
+    request.open('GET', // HTTP method
+                 url); // requested url
+
+    request.onreadystatechange = function() { // Event listener
+        // Checks if the request is complete and was successful
+        if (request.readyState === 4 && request.status === 200) {
+            // Get the type of response
+            var type = request.getResponseHeader('Content-Type');
+            // Check the type. Avoiding HTML.
+            if (type === 'application/json') 
+                callback(JSON.parse(request.responseText)); // Json response
+        }
+    };
+    request.send(null);  // Sending the response
+}
