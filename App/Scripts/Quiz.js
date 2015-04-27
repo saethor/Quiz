@@ -10,13 +10,12 @@ Quiz = {
      * @type {Object}
      */
     settings: {
-        points: 0,                                                              // How many right answeres user has
-        answeredQuestions: [],                                                  // All the questions user has answerd and what he answered
-        quizContainer: document.getElementById('quiz'),                         // Selector for the quiz container
-        alertContainer: document.getElementById('alerts'),                      // Selector for alert container
-        questionView: document.getElementById('question-template').innerHTML,   // QuestionView Template
-        finishedView: document.getElementById('quiz-finished').innerHTML,       // FinishedView Template
-        errorView: document.getElementById('quiz-error-template').innerHTML     // ErrorView Template
+        answeredQuestions: [],                                                    // All the questions user has answerd and what he answered
+        quizContainer:  document.getElementById('quiz'),                          // Selector for the quiz container
+        alertContainer: document.getElementById('alerts'),                        // Selector for alert container
+        questionView:   document.getElementById('question-template').innerHTML,   // QuestionView Template
+        finishedView:   document.getElementById('quiz-finished').innerHTML,       // FinishedView Template
+        errorView:      document.getElementById('quiz-error-template').innerHTML  // ErrorView Template
     },
 
     /**
@@ -26,7 +25,9 @@ Quiz = {
     init: function(username) {
         s = this.settings;
         e = this.events;
-        s.username = username;
+
+        s.username = new User(username, null);
+
         XHR('data/questions.json', function(json) {
             Quiz.questions = json.questions;
             Quiz.update(); // Inside the callback so its waits after XHR is done fetching questions
@@ -38,7 +39,7 @@ Quiz = {
      * @return {void} Returns nothng
      */
     update: function(question) {
-        localStorage.setItem(s.username, JSON.stringify(s.answeredQuestions));
+        localStorage.setItem(s.username.name, JSON.stringify(s.answeredQuestions));
     
         // Gets random question and displays it to the user
         var context;
@@ -51,19 +52,22 @@ Quiz = {
                     // returns random question
                     context = this.questions[Math.floor(Math.random() * this.questions.length)];
                 } while (Quiz.isAnswered(context.id, s.answeredQuestions)); // Checks if question has been answered
+            
             } else {
                 context = question;
             }
-            // Loads the template
-            this.template(s.questionView, context, s.quizContainer);
 
-             if (s.answeredQuestions.length > 0) {
+            // Loads the template
+            var currQuestion = new Question(context.id, context.question, context.choices, context.correctAnswer);
+            currQuestion.displayQuestion();
+
+            if (s.answeredQuestions.length > 0) {
                 document.getElementById('prev-question').disabled = false; 
             } else {
                 document.getElementById('prev-question').disabled = true;
             }
 
-            this.currentQuestion = context;
+            this.currentQuestion = currQuestion;
             document.addEventListener('keydown', this.events.bindKeys);
             document.getElementById('next-question').addEventListener('click', e.nxt, false);
             document.getElementById('prev-question').addEventListener('click', e.prv, false);
@@ -108,6 +112,7 @@ Quiz = {
             evt.preventDefault();
             var context = Quiz.currentQuestion;
 
+
             // Gets the answere user choose
             var answerButton = document.querySelector('input[name="' + context.id + '"]:checked');
 
@@ -116,10 +121,11 @@ Quiz = {
 
             //  Checks if it is a number, if not user has not answered
             if (isNaN(answer) === false && answer !== -1) {
+                Quiz.currentQuestion.userAnswer = answer;
 
                 //  Checks how smart user is
-                if (answer === context.correctAnswer) {
-                    s.points++;
+                if (Quiz.currentQuestion.validateAnswere()) {
+                    s.username.currentScore++;
 
                     answerButton.nextElementSibling.className = ' rightAnswere'; // Shows the user that his answere is right
                 } 
@@ -170,13 +176,8 @@ Quiz = {
             }
         },
 
-        restart: function(evt) {
-            evt.preventDefault();
-            s.answeredQuestions = [];
-            s.points = 0;
-
-            // Updates the quiz view
-            Quiz.update();
+        restart: function() {
+            window.location.reload();
         },
 
         closeError: function(evt) {
@@ -230,9 +231,7 @@ Quiz = {
 
         //  Event listener for retake quiz button
         document.getElementById('retake-quiz').addEventListener('click', function() {
-            s.answeredQuestions = [];
-            s.points = [];
-            Quiz.update();
+            e.restart();
         });
     },
 
@@ -306,13 +305,100 @@ Quiz = {
     }
 };
 
+
+/**
+ * User constructor object from http://javascriptissexy.com/oop-in-javascript-what-you-need-to-know/
+ * @param {string} name  Username form input in the begining
+ * @param {string} email Currently not used
+ */
+function User(name, email) {
+    this.name = name;
+    this.email = email;
+    this.quizScores = [];
+    this.currentScore = 0;
+}
+
+User.prototype = {
+    constructor: User,
+
+    saveScore: function(scoreToAdd) {
+        this.quizScores.push(scoreToAdd);
+    },
+
+    showScore: function() {
+        return this.currentScore;
+    },
+
+    showNameAndScore: function() {
+        var scores  = this.quizScores.length > 0 ? this.quizScores.join(',') : 'No Scores Yet';
+        return this.name + ' Scores: ' + scores;
+    },
+
+    changeEmail: function(newEmail) {
+        this.email = newEmail;
+        return 'New Email saved: ' + this.email;
+    }
+};
+
+
+
+/**
+ * Question constructor from http://javascriptissexy.com/oop-in-javascript-what-you-need-to-know/
+ * @param {int}    id            Id of each question to keep track of what question is left
+ * @param {string} question      
+ * @param {array}  choices       
+ * @param {int}    correctAnswer 
+ */
+function Question(id, question, choices, correctAnswer) {
+    this.id = id;
+    this.question = question;
+    this.choices = choices;
+    this.correctAnswer = correctAnswer;
+    this.userAnswer = '';
+
+    var newDate = new Date(),
+        QUIZ_CREATED_DATE = newDate.toLocaleDateString();
+
+    this.getQuizDate = function() {
+        return QUIZ_CREATED_DATE;
+    };
+}
+
+// Returns correct answer
+Question.prototype.getCorrectAnswer = function() {
+    return this.correctAnswer;
+};
+
+// Returns what user answerd
+Question.prototype.getUserAnswer = function() {
+    return this.userAnswer;
+};
+
+// Displays question view
+Question.prototype.displayQuestion = function() {
+    var source = s.questionView; // Gets the quiz view    
+    var template = Handlebars.compile(source); // Compiles the view  
+    var context = this; // Gets random question and displays it to the user
+    s.quizContainer.innerHTML = template(context); // Appends the view to the index
+};
+
+// Return true || false if question is correct answered
+Question.prototype.validateAnswere = function() {
+    if (this.userAnswer === this.correctAnswer)
+        return true;
+    else 
+        return false;
+};
+
+
+
 /**
  * Handlebars helper, returns how many questions are answered right / how many questions
  * @param  {string}
  * @return {string}   Concatinated points/questions
  */
 Handlebars.registerHelper('finalPoints', function() {
-    return s.points + '/' + Quiz.questions.length;
+    return s.username.showScore() + '/' + Quiz.questions.length;
 });
 
 
