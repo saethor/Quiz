@@ -28,6 +28,7 @@ Quiz = {
 
         s.username = new User(username, null);
 
+        // Gets the questions with a json call
         XHR('data/questions.json', function(json) {
             Quiz.questions = json.questions;
             Quiz.update(); // Inside the callback so its waits after XHR is done fetching questions
@@ -44,8 +45,10 @@ Quiz = {
         // Gets random question and displays it to the user
         var context;
 
+        // Checks if user still has a unanswered questions
         if (Quiz.questions.length !== s.answeredQuestions.length) {
 
+            // Checks if user is coming back for the specific question or a new random
             if (question === undefined) {
                 
                 do {
@@ -57,10 +60,11 @@ Quiz = {
                 context = question;
             }
 
-            // Loads the template
+            // Loads the question module and calls its display method
             var currQuestion = new Question(context.id, context.question, context.choices, context.correctAnswer);
             currQuestion.displayQuestion();
 
+            // Disables back button if there is no going back
             if (s.answeredQuestions.length > 0) {
                 document.getElementById('prev-question').disabled = false; 
             } else {
@@ -74,7 +78,7 @@ Quiz = {
         }
         else {
             // Returns finish view with information
-           Quiz.finished();
+            Quiz.finished();
         }
 
     },
@@ -107,7 +111,15 @@ Quiz = {
         return false;
     },
 
+    /**
+     * Module for events binding
+     * @type {Object}
+     */
     events: {
+        /**
+         * Displays next question and validates answer
+         * @param  {event} evt Current event
+         */
         nxt: function(evt) {
             evt.preventDefault();
             var context = Quiz.currentQuestion;
@@ -150,6 +162,10 @@ Quiz = {
             }
         },
 
+        /**
+         * Goes to previous question (Only possible to go one back at this time)
+         * @param  {event} evt Current event
+         */
         prv: function(evt) {
             evt.preventDefault();
 
@@ -176,15 +192,27 @@ Quiz = {
             }
         },
 
+        /**
+         * Restarts the quiz
+         * @param  {event} evt Current event
+         */
         restart: function() {
             window.location.reload();
         },
 
+        /**
+         * Closes error window at the top
+         * @param  {event} evt Current event
+         */
         closeError: function(evt) {
             evt.preventDefault();
             Quiz.displayMessage('clear');
         },
 
+        /**
+         * Binds keyboard keys to a specific functions
+         * @param  {event} evt Current event
+         */
         bindKeys: function(evt) {
             switch(evt.which) {
                 case 13:
@@ -258,11 +286,15 @@ Quiz = {
                 temp_userScore++;
             }
         }
-
     },
 
+    /**
+     * Validates question to check if the answer is right
+     * @param  {array} 
+     * @return {bool}         
+     */
     validateAnswere: function(answere) {
-        var _questions = Quiz.questions,
+        var _questions = Quiz.questions, // Underscore to prevent conflict
             temp_quest;
         for (var question in _questions) {
             temp_quest = _questions[question];
@@ -275,6 +307,10 @@ Quiz = {
         return false;
     },
 
+    /**
+     * Returns localstorage as a object
+     * @return {object} Localstorage object
+     */
     getLocalStorage: function() {
         var _localStorage = {};
         for (var i = 0; i < localStorage.length; i++) {
